@@ -10,26 +10,27 @@
     :root{
       --bg:#ffffff;
       --fg:#0a0a0a;
-      --muted:#525252;
-      --border:#e5e5e5;
+      --muted:#575757;
+      --border:#e6e6e6;
       --card:#ffffff;
-      --shadow: 0 8px 20px rgba(0,0,0,.06);
-      --shadowHover: 0 14px 32px rgba(0,0,0,.10);
       --ring: rgba(0,0,0,.18);
+      --shadow: 0 10px 24px rgba(0,0,0,.08);
+      --shadowHover: 0 18px 40px rgba(0,0,0,.12);
     }
     html.dark{
       --bg:#0a0a0a;
       --fg:#f5f5f5;
-      --muted:#b3b3b3;
+      --muted:#b5b5b5;
       --border:#262626;
-      --card:#0a0a0a;
-      --shadow: 0 10px 26px rgba(0,0,0,.45);
-      --shadowHover: 0 16px 40px rgba(0,0,0,.55);
+      --card:#0f0f0f;
       --ring: rgba(255,255,255,.18);
+      --shadow: 0 16px 40px rgba(0,0,0,.55);
+      --shadowHover: 0 22px 56px rgba(0,0,0,.65);
     }
 
     *{ box-sizing:border-box }
     html,body{ height:100% }
+    html{ scroll-behavior:smooth; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
@@ -37,23 +38,67 @@
       color:var(--fg);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
     }
 
     a{ color:inherit; text-decoration:none }
     button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer }
-    .container{ max-width:1080px; margin:0 auto; padding: 24px 18px 80px; }
+
+    /* Subtle cursor spotlight */
+    .spotlight{
+      position: fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background:
+        radial-gradient(600px circle at var(--x, 50%) var(--y, 30%),
+          rgba(0,0,0,.07), transparent 60%);
+      transition: background .15s linear;
+    }
+    html.dark .spotlight{
+      background:
+        radial-gradient(650px circle at var(--x, 50%) var(--y, 30%),
+          rgba(255,255,255,.07), transparent 62%);
+    }
+
+    /* Tiny grain (monochrome) */
+    .grain{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      opacity:.06;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    html.dark .grain{ mix-blend-mode: screen; opacity:.05; }
+
+    /* Scroll progress bar */
+    .progress{
+      position: fixed;
+      top:0;
+      left:0;
+      height:3px;
+      width:0%;
+      background: var(--fg);
+      z-index: 50;
+      transform-origin:left;
+    }
+
+    .wrap{ position:relative; z-index:1; }
+    .container{ max-width:1120px; margin:0 auto; padding: 24px 18px 90px; }
 
     /* Top bar */
     .topbar{
       position: sticky;
       top:0;
       z-index:10;
-      background: color-mix(in srgb, var(--bg) 78%, transparent);
       backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
       border-bottom:1px solid var(--border);
     }
     .topbar-inner{
-      max-width:1080px;
+      max-width:1120px;
       margin:0 auto;
       padding: 14px 18px;
       display:flex;
@@ -67,9 +112,10 @@
     }
     .brand small{ color:var(--muted); font-size:12px; letter-spacing:.2px }
     .brand strong{ font-size:16px }
+
     .nav{
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
@@ -97,12 +143,20 @@
     .iconbtn:hover{ transform: translateY(-1px); background: color-mix(in srgb, var(--fg) 6%, transparent); }
 
     /* Hero */
-    .hero{ padding: 34px 0 0; }
+    .hero{
+      padding: 34px 0 10px;
+      display:grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 960px){ .hero{ grid-template-columns: 1fr; } }
+
     .hero h1{
       margin:0;
-      font-size: clamp(30px, 5vw, 44px);
-      letter-spacing: -0.02em;
-      line-height:1.08;
+      font-size: clamp(30px, 4.8vw, 46px);
+      letter-spacing: -0.03em;
+      line-height:1.06;
     }
     .hero p{
       margin: 14px 0 0;
@@ -118,6 +172,7 @@
       gap:10px;
       align-items:center;
     }
+
     .btn{
       display:inline-flex;
       align-items:center;
@@ -129,7 +184,7 @@
       background: var(--card);
       transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
       box-shadow: 0 1px 0 rgba(0,0,0,.04);
-      font-weight:600;
+      font-weight:650;
       font-size:14px;
     }
     html.dark .btn{ box-shadow:none; }
@@ -139,26 +194,54 @@
       border-color: transparent;
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: var(--shadow); }
-    .btn:focus{ outline: none; box-shadow: 0 0 0 4px var(--ring), var(--shadow); }
+    .btn:focus{ outline:none; box-shadow: 0 0 0 4px var(--ring), var(--shadow); }
+
+    /* Stat card */
+    .statcard{
+      border:1px solid var(--border);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      padding: 16px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    }
+    html.dark .statcard{ box-shadow:none; }
+    .statgrid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .stat{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--card);
+    }
+    .stat strong{ display:block; font-size: 18px; letter-spacing:-0.02em; }
+    .stat small{ color: var(--muted); }
 
     /* Sections */
-    .section{ margin-top: 46px; scroll-margin-top: 90px; }
-    .section-head{
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
+    .section{ margin-top: 44px; scroll-margin-top: 90px; }
+    .section-head{ display:flex; flex-direction:column; gap: 6px; margin-bottom: 14px; }
     .kicker{
       text-transform: uppercase;
-      letter-spacing:.12em;
+      letter-spacing:.14em;
       font-size: 12px;
       color: var(--muted);
     }
-    .section h2{
-      margin:0;
-      font-size: 22px;
-      letter-spacing:-0.01em;
+    .section h2{ margin:0; font-size: 22px; letter-spacing:-0.01em; }
+
+    /* Filters */
+    .filters{ display:flex; gap:8px; flex-wrap:wrap; margin: 6px 0 14px; }
+    .chip{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 13px;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+    .chip:hover{ transform: translateY(-1px); color: var(--fg); }
+    .chip.active{
+      background: var(--fg);
+      color: var(--bg);
+      border-color: transparent;
     }
 
     /* Cards */
@@ -168,18 +251,32 @@
 
     .card{
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 20px;
       background: var(--card);
       padding: 16px;
-      box-shadow: 0 1px 0 rgba(0,0,0,.04);
       transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
       will-change: transform;
+      position:relative;
+      overflow:hidden;
     }
-    html.dark .card{ box-shadow:none; }
-    .card:hover{ transform: translateY(-2px); box-shadow: var(--shadowHover); }
+    .card::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(500px circle at 20% 0%, rgba(255,255,255,.14), transparent 45%);
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events:none;
+    }
+    html.dark .card::after{
+      background: radial-gradient(500px circle at 20% 0%, rgba(255,255,255,.10), transparent 45%);
+    }
+    .card:hover{ transform: translateY(-3px); box-shadow: var(--shadowHover); }
+    .card:hover::after{ opacity: 1; }
+
     .card h3{ margin:0; font-size: 16px; letter-spacing:-0.01em; }
     .card .meta{ margin-top:6px; color:var(--muted); font-size:12px; }
     .card p{ margin:10px 0 0; color:var(--muted); line-height:1.55; font-size: 14px; }
+
     .pills{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; }
     .pill{
       border:1px solid var(--border);
@@ -188,6 +285,7 @@
       font-size: 12px;
       color: var(--muted);
     }
+
     .list{ margin: 10px 0 0; padding: 0; list-style: none; }
     .list li{
       display:flex; gap:10px;
@@ -203,21 +301,14 @@
       flex:none;
     }
 
-    /* Reveal animation */
-    .reveal{
-      opacity:0;
-      transform: translateY(10px);
-      transition: opacity .5s ease, transform .5s ease;
-    }
-    .reveal.in{
-      opacity:1;
-      transform: translateY(0);
-    }
+    /* Reveal */
+    .reveal{ opacity:0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.in{ opacity:1; transform: translateY(0); }
 
     /* Modal */
     .overlay{
       position:fixed; inset:0;
-      background: rgba(0,0,0,.52);
+      background: rgba(0,0,0,.58);
       display:none;
       align-items:flex-end;
       justify-content:center;
@@ -225,23 +316,21 @@
       z-index: 100;
     }
     .overlay.open{ display:flex; }
-    @media (min-width: 640px){
-      .overlay{ align-items:center; }
-    }
+    @media (min-width: 640px){ .overlay{ align-items:center; } }
+
     .modal{
       width: 100%;
-      max-width: 840px;
+      max-width: 860px;
       background: var(--bg);
-      color: var(--fg);
       border:1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 22px;
       box-shadow: var(--shadowHover);
-      transform: translateY(10px);
+      transform: translateY(12px) scale(.99);
       opacity:0;
       transition: transform .2s ease, opacity .2s ease;
       overflow:hidden;
     }
-    .overlay.open .modal{ transform: translateY(0); opacity:1; }
+    .overlay.open .modal{ transform: translateY(0) scale(1); opacity:1; }
     .modal-head{
       padding: 16px;
       border-bottom: 1px solid var(--border);
@@ -259,7 +348,6 @@
     }
     .modal-close:hover{ background: color-mix(in srgb, var(--fg) 6%, transparent); }
 
-    /* Footer */
     footer{
       margin-top: 56px;
       border-top:1px solid var(--border);
@@ -272,191 +360,214 @@
       font-size: 13px;
     }
 
-    /* Simple icons (inline) */
+    /* inline icons */
     .ico{ width:16px;height:16px; display:inline-block; vertical-align:-3px; }
     .ico svg{ width:16px;height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <small>East Lansing, MI</small>
-        <strong>Aditya Mittal</strong>
-      </div>
-      <div class="nav">
-        <a href="#experience">Experience</a>
-        <a href="#projects">Projects</a>
-        <a href="#education">Education</a>
-        <a href="#contact">Contact</a>
-        <button id="themeBtn" class="iconbtn" aria-label="Toggle theme" title="Toggle theme"></button>
+  <div class="progress" id="progress"></div>
+  <div class="spotlight" id="spotlight"></div>
+  <div class="grain"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <small>East Lansing, MI</small>
+          <strong>Aditya Mittal</strong>
+        </div>
+        <div class="nav">
+          <a href="#experience">Experience</a>
+          <a href="#projects">Projects</a>
+          <a href="#education">Education</a>
+          <a href="#contact">Contact</a>
+          <button id="themeBtn" class="iconbtn" aria-label="Toggle theme" title="Toggle theme"></button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="container">
-    <section class="hero reveal">
-      <h1>Data Scientist • ML Engineer • Data Science (MS @ Michigan State University)</h1>
-      <p>
-        I build ML systems that turn messy data into confident decisions — from credit risk scoring to real-time
-        computer vision.
-      </p>
+    <div class="container">
+      <section class="hero reveal">
+        <div>
+          <h1>Data Scientist • ML Engineer</h1>
+          <p>
+            I build ML systems that turn messy data into confident decisions — from credit risk scoring to real-time
+            computer vision.
+          </p>
 
-      <div class="cta">
-        <a class="btn primary" href="https://linkedin.com/in/aditya-mittal-510798217/" target="_blank" rel="noreferrer">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4V9h4v2a4 4 0 0 1 2-3z"/><path d="M2 9h4v12H2z"/><path d="M4 4a2 2 0 1 0 0.001 4.001A2 2 0 0 0 4 4z"/></svg>
-          </span>
-          LinkedIn
-        </a>
+          <div class="cta">
+            <a class="btn primary" href="https://linkedin.com/in/aditya-mittal-510798217/" target="_blank" rel="noreferrer">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4V9h4v2a4 4 0 0 1 2-3z"/><path d="M2 9h4v12H2z"/><path d="M4 4a2 2 0 1 0 0.001 4.001A2 2 0 0 0 4 4z"/></svg>
+              </span>
+              LinkedIn
+            </a>
 
-        <a class="btn" href="https://github.com/mittaladitya17" target="_blank" rel="noreferrer">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 18 3.77 5.07 5.07 0 0 0 17.91 1S16.73.65 14 2.48a13.38 13.38 0 0 0-5 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 3.77 5.44 5.44 0 0 0 3.5 7.52c0 5.42 3.3 6.61 6.44 6.97A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          </span>
-          GitHub
-        </a>
+            <a class="btn" href="https://github.com/mittaladitya17" target="_blank" rel="noreferrer">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 18 3.77 5.07 5.07 0 0 0 17.91 1S16.73.65 14 2.48a13.38 13.38 0 0 0-5 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 3.77 5.44 5.44 0 0 0 3.5 7.52c0 5.42 3.3 6.61 6.44 6.97A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </span>
+              GitHub
+            </a>
 
-        
-        <a class="btn" href="./aditya_mittal.pdf" target="_blank" rel="noreferrer">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-          </span>
-          Resume
-        </a>
+            <!-- FIXED: your repo already has aditya_mittal.pdf -->
+            <a class="btn" href="./aditya_mittal.pdf" target="_blank" rel="noreferrer">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              </span>
+              Resume
+            </a>
 
-        <button id="copyEmail" class="btn" type="button">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M16 4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="M8 2h8"/></svg>
-          </span>
-          Copy email
-        </button>
-      </div>
-    </section>
-
-    <section id="experience" class="section reveal">
-      <div class="section-head">
-        <div class="kicker">Work</div>
-        <h2>Experience</h2>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h3>Data Scientist · <span style="color:var(--muted)">Aavas Financiers Ltd.</span></h3>
-          <div class="meta">Jul 2024 — Jan 2025</div>
-          <ul class="list">
-            <li><span class="dot"></span><span>Built a churn prediction model using large bureau datasets to reduce customer attrition.</span></li>
-            <li><span class="dot"></span><span>Designed a scoring system to evaluate branch performance across locations.</span></li>
-            <li><span class="dot"></span><span>Performed customer profiling to identify high-potential branch locations.</span></li>
-          </ul>
+            <button id="copyEmail" class="btn" type="button">Copy email</button>
+          </div>
         </div>
 
-        <div class="card">
-          <h3>Data Analysis Research Intern · <span style="color:var(--muted)">MNIT Jaipur</span></h3>
-          <div class="meta">Jun 2023 — Sept 2023</div>
-          <ul class="list">
-            <li><span class="dot"></span><span>Developed an ML pipeline to detect fraudulent credit card transactions.</span></li>
-            <li><span class="dot"></span><span>Used SMOTE to address class imbalance and improve performance.</span></li>
-            <li><span class="dot"></span><span>Improved accuracy with testing and hyperparameter tuning.</span></li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="projects" class="section reveal">
-      <div class="section-head">
-        <div class="kicker">Selected work</div>
-        <h2>Projects</h2>
-      </div>
-
-      <div class="grid two" id="projectsGrid"></div>
-    </section>
-
-    <section id="education" class="section reveal">
-      <div class="section-head">
-        <div class="kicker">Academics</div>
-        <h2>Education</h2>
-      </div>
-
-      <div class="grid two">
-        <div class="card">
-          <h3>Michigan State University</h3>
-          <div class="meta">MS, Data Science (GPA 4.0/4.0)</div>
-          <p>Aug 2025 — May 2027</p>
-        </div>
-        <div class="card">
-          <h3>SRM University, KTR</h3>
-          <div class="meta">BTech, Computer Science and Engineering (GPA 3.58/4.0)</div>
-          <p>Oct 2020 — May 2024</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section reveal">
-      <div class="section-head">
-        <div class="kicker">Reach out</div>
-        <h2>Contact</h2>
-      </div>
-
-      <div class="card">
-        <div class="grid two">
-          <div>
-            <div class="kicker" style="margin-bottom:6px;">Email</div>
-            <div style="font-weight:700;">mittal.aditya1702@gmail.com</div>
-            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-              <a class="btn primary" href="mailto:mittal.aditya1702@gmail.com">
-                <span class="ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
-                </span>
-                Email
-              </a>
-              <button class="btn" type="button" id="copyEmail2">Copy</button>
+        <aside class="statcard">
+          <div class="kicker">Quick snapshot</div>
+          <div class="statgrid" style="margin-top:12px;">
+            <div class="stat">
+              <strong>4</strong>
+              <small>Projects</small>
+            </div>
+            <div class="stat">
+              <strong>2</strong>
+              <small>Industry roles</small>
+            </div>
+            <div class="stat">
+              <strong>MS</strong>
+              <small>Data Science @ MSU</small>
+            </div>
+            <div class="stat">
+              <strong>Focus</strong>
+              <small>Risk + CV</small>
             </div>
           </div>
+        </aside>
+      </section>
 
-          <div>
-            <div class="kicker" style="margin-bottom:6px;">Phone</div>
-            <div style="font-weight:700;">+1 (973) 390-3970</div>
-            <p style="margin-top:10px;">Prefer LinkedIn DMs for first contact.</p>
+      <section id="experience" class="section reveal">
+        <div class="section-head">
+          <div class="kicker">Work</div>
+          <h2>Experience</h2>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <h3>Data Scientist · <span style="color:var(--muted)">Aavas Financiers Ltd.</span></h3>
+            <div class="meta">Jul 2024 — Jan 2025</div>
+            <ul class="list">
+              <li><span class="dot"></span><span>Built a churn prediction model using large bureau datasets to reduce customer attrition.</span></li>
+              <li><span class="dot"></span><span>Designed a scoring system to evaluate branch performance across locations.</span></li>
+              <li><span class="dot"></span><span>Performed customer profiling to identify high-potential branch locations.</span></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Data Analysis Research Intern · <span style="color:var(--muted)">MNIT Jaipur</span></h3>
+            <div class="meta">Jun 2023 — Sept 2023</div>
+            <ul class="list">
+              <li><span class="dot"></span><span>Developed an ML pipeline to detect fraudulent credit card transactions.</span></li>
+              <li><span class="dot"></span><span>Used SMOTE to address class imbalance and improve performance.</span></li>
+              <li><span class="dot"></span><span>Improved accuracy with testing and hyperparameter tuning.</span></li>
+            </ul>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <footer>
-      <div>Black & white portfolio · Static HTML (no build) · GitHub Pages</div>
-      <div style="display:flex; gap:14px;">
-        <a href="https://linkedin.com/in/aditya-mittal-510798217/" target="_blank" rel="noreferrer">LinkedIn</a>
-        <a href="https://github.com/mittaladitya17" target="_blank" rel="noreferrer">GitHub</a>
-      </div>
-    </footer>
-  </div>
-
-  <!-- Modal -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <h3 id="modalTitle">Project</h3>
-          <div class="meta" id="modalWhen"></div>
+      <section id="projects" class="section reveal">
+        <div class="section-head">
+          <div class="kicker">Selected work</div>
+          <h2>Projects</h2>
         </div>
-        <button class="modal-close" id="modalClose" aria-label="Close">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-          </span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p id="modalDesc" style="margin:0; color:var(--muted); line-height:1.6;"></p>
-        <div id="modalTags" class="pills" style="margin-top:14px;"></div>
-        <div id="modalLinks" class="cta" style="margin-top:16px;"></div>
+
+        <div class="filters" id="filters"></div>
+        <div class="grid two" id="projectsGrid"></div>
+      </section>
+
+      <section id="education" class="section reveal">
+        <div class="section-head">
+          <div class="kicker">Academics</div>
+          <h2>Education</h2>
+        </div>
+
+        <div class="grid two">
+          <div class="card">
+            <h3>Michigan State University</h3>
+            <div class="meta">MS, Data Science (GPA 4.0/4.0)</div>
+            <p>Aug 2025 — May 2027</p>
+          </div>
+          <div class="card">
+            <h3>SRM University, KTR</h3>
+            <div class="meta">BTech, Computer Science and Engineering (GPA 3.58/4.0)</div>
+            <p>Oct 2020 — May 2024</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section reveal">
+        <div class="section-head">
+          <div class="kicker">Reach out</div>
+          <h2>Contact</h2>
+        </div>
+
+        <div class="card">
+          <div class="grid two">
+            <div>
+              <div class="kicker" style="margin-bottom:6px;">Email</div>
+              <div style="font-weight:750;">mittal.aditya1702@gmail.com</div>
+              <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <a class="btn primary" href="mailto:mittal.aditya1702@gmail.com">Email</a>
+                <button class="btn" type="button" id="copyEmail2">Copy</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="kicker" style="margin-bottom:6px;">Phone</div>
+              <div style="font-weight:750;">+1 (973) 390-3970</div>
+              <p style="margin-top:10px;">Prefer LinkedIn DMs for first contact.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div>Black & white portfolio · Static HTML · GitHub Pages</div>
+        <div style="display:flex; gap:14px;">
+          <a href="https://linkedin.com/in/aditya-mittal-510798217/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://github.com/mittaladitya17" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <div>
+            <h3 id="modalTitle">Project</h3>
+            <div class="meta" id="modalWhen"></div>
+          </div>
+          <button class="modal-close" id="modalClose" aria-label="Close">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="modalDesc" style="margin:0; color:var(--muted); line-height:1.6;"></p>
+          <div id="modalTags" class="pills" style="margin-top:14px;"></div>
+          <div id="modalLinks" class="cta" style="margin-top:16px;"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ------------ Data (edit anytime) ------------
+    // ------------ Data ------------
+    const EMAIL = "mittal.aditya1702@gmail.com";
+
     const PROJECTS = [
       {
         title: "Credit Risk Prediction Dashboard",
@@ -470,21 +581,21 @@
       {
         title: "Human Pose Tracking & Detection",
         when: "Dec 2023 — May 2024",
-        tags: ["OpenCV","MediaPipe","Real-time"],
+        tags: ["CV","OpenCV","MediaPipe","Real-time"],
         description: "Real-time pose detection & tracking to drive interactive UI/game controls with low latency.",
         links: []
       },
       {
         title: "Virtual 3D Glasses Face Trial",
         when: "Sept 2023 — Dec 2023",
-        tags: ["OpenCV","AAM","AR"],
+        tags: ["CV","OpenCV","AR","AAM"],
         description: "Virtual try-on for eyeglasses using facial landmarking and stable rendering.",
         links: []
       },
       {
         title: "Pneumonia Detection using AI",
         when: "Feb 2023 — May 2023",
-        tags: ["CNN","Transfer Learning","Deployment"],
+        tags: ["ML","CNN","Transfer Learning","Deployment"],
         description: "Pneumonia classifier on chest X-rays using transfer learning and fine-tuning, deployed to users.",
         links: []
       }
@@ -513,22 +624,49 @@
       btn.title = isDark ? "Switch to light" : "Switch to dark";
     }
 
-    // ------------ Render projects ------------
+    // ------------ Filters + render projects ------------
     const projectsGrid = document.getElementById("projectsGrid");
+    const filtersEl = document.getElementById("filters");
+
     function el(tag, cls){
       const n = document.createElement(tag);
       if (cls) n.className = cls;
       return n;
     }
+
+    const FILTERS = ["All", "ML", "CV", "Streamlit"];
+    let activeFilter = "All";
+
+    function renderFilters(){
+      filtersEl.innerHTML = "";
+      FILTERS.forEach(name => {
+        const b = el("button", "chip" + (name === activeFilter ? " active" : ""));
+        b.type = "button";
+        b.textContent = name;
+        b.addEventListener("click", () => {
+          activeFilter = name;
+          renderFilters();
+          renderProjects();
+        });
+        filtersEl.appendChild(b);
+      });
+    }
+
+    function passesFilter(p){
+      if (activeFilter === "All") return true;
+      return (p.tags || []).some(t => (t || "").toLowerCase() === activeFilter.toLowerCase());
+    }
+
     function renderProjects(){
       projectsGrid.innerHTML = "";
-      PROJECTS.forEach((p, idx) => {
+      PROJECTS.filter(passesFilter).forEach((p, idx) => {
         const btn = el("button");
         btn.type = "button";
         btn.style.textAlign = "left";
         btn.style.width = "100%";
 
         const card = el("div", "card");
+
         const top = el("div");
         top.style.display = "flex";
         top.style.alignItems = "flex-start";
@@ -548,7 +686,7 @@
         desc.textContent = p.description;
 
         const pills = el("div", "pills");
-        p.tags.forEach(t => {
+        (p.tags || []).slice(0, 5).forEach(t => {
           const pi = el("span", "pill");
           pi.textContent = t;
           pills.appendChild(pi);
@@ -559,7 +697,7 @@
         card.appendChild(pills);
 
         btn.appendChild(card);
-        btn.addEventListener("click", () => openModal(idx));
+        btn.addEventListener("click", () => openModal(p));
         projectsGrid.appendChild(btn);
       });
     }
@@ -572,14 +710,13 @@
     const modalTags = document.getElementById("modalTags");
     const modalLinks = document.getElementById("modalLinks");
 
-    function openModal(index){
-      const p = PROJECTS[index];
+    function openModal(p){
       modalTitle.textContent = p.title;
       modalWhen.textContent = p.when;
       modalDesc.textContent = p.description;
 
       modalTags.innerHTML = "";
-      p.tags.forEach(t => {
+      (p.tags || []).forEach(t => {
         const pi = el("span", "pill");
         pi.textContent = t;
         modalTags.appendChild(pi);
@@ -611,13 +748,11 @@
     window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
     // ------------ Copy email ------------
-    const EMAIL = "mittal.aditya1702@gmail.com";
     async function copyEmail(){
       try{
         await navigator.clipboard.writeText(EMAIL);
         toast("Email copied");
       }catch(e){
-        // Fallback
         prompt("Copy email:", EMAIL);
       }
     }
@@ -648,27 +783,41 @@
       t.textContent = msg;
       t.style.opacity = "1";
       if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        t.style.opacity = "0";
-      }, 1400);
+      toastTimer = setTimeout(() => { t.style.opacity = "0"; }, 1400);
     }
 
     // ------------ Reveal on scroll ------------
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add("in");
-      });
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in"); });
     }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(n => observer.observe(n));
 
-    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+    // ------------ Spotlight follows cursor ------------
+    const spot = document.getElementById("spotlight");
+    window.addEventListener("mousemove", (e) => {
+      spot.style.setProperty("--x", e.clientX + "px");
+      spot.style.setProperty("--y", e.clientY + "px");
+    }, { passive:true });
 
-    // ------------ Boot ------------
-    renderProjects();
+    // ------------ Scroll progress ------------
+    const progress = document.getElementById("progress");
+    window.addEventListener("scroll", () => {
+      const h = document.documentElement;
+      const sc = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const pct = max > 0 ? (sc / max) * 100 : 0;
+      progress.style.width = pct + "%";
+    }, { passive:true });
+
+    // ------------ Theme boot ------------
     setTheme(getTheme());
     document.getElementById("themeBtn").addEventListener("click", () => {
       setTheme(!document.documentElement.classList.contains("dark"));
     });
+
+    // ------------ Render boot ------------
+    renderFilters();
+    renderProjects();
   </script>
 </body>
 </html>
-
