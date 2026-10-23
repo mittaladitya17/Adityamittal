@@ -35,15 +35,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .skip{position:absolute;left:-999px;top:8px;z-index:1000;background:var(--accent);color:var(--black);padding:8px 14px;border-radius:6px;font-family:'Space Mono',monospace;font-size:12px}
 .skip:focus{left:12px}
 
-@media (hover:hover) and (pointer:fine){
-  body.cursor-on{cursor:none}
-  body.cursor-on a,body.cursor-on button,body.cursor-on .proj-row{cursor:none}
-  #cursor,#cursor-follower{display:block}
-}
-#cursor,#cursor-follower{display:none;position:fixed;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:difference}
-#cursor{width:8px;height:8px;background:var(--accent);z-index:9999}
-#cursor-follower{width:38px;height:38px;border:1px solid rgba(200,255,0,.45);z-index:9998;transition:width .2s,height .2s,border-color .2s}
-body:has(a:hover) #cursor-follower,body:has(button:hover) #cursor-follower,body:has(.proj-row:hover) #cursor-follower{width:58px;height:58px;border-color:rgba(200,255,0,.85)}
 
 #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:999;background:var(--accent)}
 
@@ -221,8 +212,6 @@ footer a:hover{color:var(--accent)}
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div id="progress"></div>
-<div id="cursor"></div>
-<div id="cursor-follower"></div>
 
 <nav id="nav" aria-label="Primary">
   <a class="nav-logo" href="#hero">AM<span>.</span></a>
@@ -700,12 +689,6 @@ if(!reduce){
   }),{threshold:.6});
   document.querySelectorAll("[data-count]").forEach(n=>cio.observe(n));
 
-  if(matchMedia("(hover:hover) and (pointer:fine)").matches){
-    document.body.classList.add("cursor-on");
-    const c=$("cursor"),f=$("cursor-follower");let mx=-100,my=-100,fx=-100,fy=-100;
-    window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;c.style.left=mx+"px";c.style.top=my+"px"},{passive:true});
-    (function loop(){fx+=(mx-fx)*.14;fy+=(my-fy)*.14;f.style.left=fx+"px";f.style.top=fy+"px";requestAnimationFrame(loop)})();
-  }
 
   window.addEventListener("load",()=>{
     if(window.gsap)gsap.from(".hero-h1 .line>span",{yPercent:110,duration:1.1,stagger:.12,ease:"expo.out",delay:.1});
